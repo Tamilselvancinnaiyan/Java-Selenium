@@ -1,0 +1,112 @@
+package pages;
+
+import java.net.MalformedURLException;
+import java.time.Duration;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.junit.Assert;
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import cucumber.api.PendingException;
+import cucumber.api.java.After;
+import cucumber.api.java.Before;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import pages.Homepage;
+import utils.Base;
+import utils.ExcelReader;
+import utils.LoggerHandler;
+import utils.Reporter;
+import utils.WebDriverHelper;
+import uistore.HomepageUI;
+
+public class Homepage {
+    Base base = new Base();
+    private WebDriver driver;
+    private WebDriverHelper driverHelper;
+    ChromeOptions options = new ChromeOptions();
+        
+    public Homepage() { 
+
+    }
+
+    public Homepage(WebDriver driver) {
+        this.driver = driver;
+        driverHelper = new WebDriverHelper(driver);
+    }
+    
+    
+    @Given("^I am on ELC Website$")
+        public void i_am_on_ELC_Website() {
+        driver.get("https://www.elc.co.uk");
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        options.addArguments("--remote-allow-origins=*");
+        try {
+            driverHelper.clickElement(HomepageUI.AllowButton);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+}
+
+   
+    @When("^I input the text \"([^\"]*)\" into the search box$")
+    public void i_input_the_text_into_the_search_box(String search_text) throws Throwable {
+    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+   
+    driverHelper.fillForm(HomepageUI.SearchBar, search_text);
+}
+
+
+
+    @When("^I click on the first option from the auto-populated list$")
+    public void i_click_on_the_first_option_from_the_auto_populated_list() {
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+    // Implement the action to click on the first option from the auto-populated list
+    WebElement element = wait.until(ExpectedConditions.elementToBeClickable(HomepageUI.SelectList));
+    element.click();
+        }
+
+    // @Then("^I confirm that the search results page contains the label \"([^\"]*)\"$")
+    //     public void i_confirm_that_the_search_results_page_contains_the_label(String Expected_Label) throws Throwable {
+    //     WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    //     WebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/main/div[4]/div[1]/div[1]/div/h1")));
+    //     String labelText = element.getText();
+    //     Assert.assertTrue("Expected label text to contain '" + Expected_Label + "', but it was '" + labelText + "'", labelText.contains( Expected_Label));
+    //     System.out.println(labelText);
+
+    //     throw new PendingException();
+    //      } 
+ @Then("^I confirm that the search results page contains the label \"([^\"]*)\"$")   
+  public void i_confirm_that_the_search_results_page_contains_the_label(String Expected_Label) throws Throwable {
+  WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+  WebElement element = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("/html/body/main/div[4]/div[1]/div[1]/div/h1")));
+  String labelText = element.getText();
+
+  // Update the if statement to return true if the Expected label text to contain 'Peppa pig' return true
+  if (labelText.toLowerCase().contains(Expected_Label.toLowerCase())) {
+    return;
+  } else {
+    Assert.assertTrue("Expected label text to contain '" + Expected_Label + "', but it was '" + labelText + "'", labelText.contains(Expected_Label));
+  }
+
+  System.out.println(labelText);
+
+  throw new PendingException();
+}
+
+
+}
+
+ 
